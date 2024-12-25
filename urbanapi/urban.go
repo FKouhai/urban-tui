@@ -1,21 +1,21 @@
 package urbanapi
+
 import (
+	"encoding/json"
+	"fmt"
+	"io"
 	"log"
 	"net/http"
-	"encoding/json"
-	"io"
-	"fmt"
 )
 
 type RData struct {
 	Data []struct {
 		Meaning string `json:"meaning"`
 		Example string `json:"example"`
-	}
+	}`json:"data"`
 }
 func Run(message string) string{
 	endpoint := "https://unofficialurbandictionaryapi.com/api/search?term="
-	log.Println("fetching definition")
 	var d RData
 	out, err := connect(endpoint,message); if err != nil {
 		log.Println(err)

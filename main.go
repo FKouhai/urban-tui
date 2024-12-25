@@ -2,65 +2,36 @@ package main
 
 import (
 	"log"
-	"github.com/FKouhai/urban-cli/urban-api"
+	"github.com/FKouhai/urban-cli/model"
 
 	"github.com/charmbracelet/bubbles/textinput"
+	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 )
-
-type (
-	errMsg error
-)
-
-type model struct {
-	textInput textinput.Model
-	err error
-}
 
 func main() {
 	p := tea.NewProgram(initialModel())
 	if _, err := p.Run(); err != nil {
 		log.Fatal(err)
 	}
-
 }
 
-func initialModel() model {
+func initialModel() model.Model {
 	ti := textinput.New()
+	s := spinner.New()
+	s.Spinner = spinner.Dot
 	ti.Placeholder = "based"
 	ti.Focus()
 	ti.CharLimit = 144
-	return model {
-		textInput: ti,
-		err: nil,
+	return model.Model {
+		TextInput: ti,
+		Spinner: s,
+		Err: nil,
 	}
 }
 
-func (m model) Init() tea.Cmd {
-	return textinput.Blink
-}
-
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	var cmd tea.Cmd
-
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		switch msg.Type {
-		case tea.KeyCtrlC, tea.KeyEsc:
-			return m, tea.Quit
-		case tea.KeyEnter:
-			value := m.textInput.Value()
-			s := urbanapi.Run(value)
-			return m, tea.Println(s)
-		}
-	case errMsg:
-		m.err = msg
-		return m, nil
-	}
-
-	m.textInput, cmd = m.textInput.Update(msg)
-	return m, cmd
-}
-func (m model) View() string {
-	return m.textInput.View()
-}
+//TODO -> need to improve the visuals(lipgloss)
+//TODO -> usage of huh
+//TODO -> if want to make a new search add in the case statement ctrl + n for a new search
+//TODO -> need to use a prompt for the word to search
+//TODO -> create a readme using VHS
