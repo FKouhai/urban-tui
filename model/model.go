@@ -1,6 +1,8 @@
 package model
 
 import (
+	//"fmt"
+
 	"fmt"
 
 	"github.com/FKouhai/urban-cli/urbanapi"
@@ -13,11 +15,13 @@ type errMsg error
 type Styles struct {
 	BorderColor lipgloss.Color
 	InputField lipgloss.Style
+	OutputField lipgloss.Style
 }
 func DefaultStyLes() *Styles {
 	s := new(Styles)
 	s.BorderColor = lipgloss.Color("36")
 	s.InputField = lipgloss.NewStyle().Foreground(s.BorderColor).BorderStyle(lipgloss.NormalBorder()).Padding(1).Width(80)
+	s.OutputField = lipgloss.NewStyle().Foreground(s.BorderColor).BorderStyle(lipgloss.NormalBorder()).Padding(1).Width(80)
 	return s
 }
 type Model struct {
@@ -69,12 +73,17 @@ func (m Model) View() string {
 	return	lipgloss.Place(
 			m.Width,
 			m.Height,
-			lipgloss.Left,
+			lipgloss.Center,
 			lipgloss.Center,
 			lipgloss.JoinVertical(
 				lipgloss.Left,
-				fmt.Sprintf("%s -> %s\nexample -> %s", m.Key, m.Definition, m.Example)),
-			)
+				fmt.Sprintf("%s", m.Key),
+				m.Styles.OutputField.Render(m.Definition),
+				fmt.Sprintf("Example"),
+				m.Styles.OutputField.Render(m.Example)),
+				)
+				//fmt.Sprintf("%s -> %s\nexample -> %s", m.Key, m.Definition, m.Example)),
+			//)
 	}
 	return lipgloss.Place(
 		m.Width,
