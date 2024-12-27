@@ -33,5 +33,3 @@ func initialModel() model.Model {
 	}
 }
 
-//TODO -> usage of huh
-//TODO -> need to use a prompt for the word to search
