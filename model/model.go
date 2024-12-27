@@ -1,21 +1,40 @@
 package model
+
 import (
-	"github.com/charmbracelet/bubbles/textinput"
-	"github.com/charmbracelet/bubbles/spinner"
-	"github.com/FKouhai/urban-cli/urbanapi"
-	tea "github.com/charmbracelet/bubbletea"
 	"fmt"
+
+	"github.com/FKouhai/urban-cli/urbanapi"
+	"github.com/charmbracelet/bubbles/spinner"
+	"github.com/charmbracelet/bubbles/textinput"
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 type errMsg error
+type Styles struct {
+	BorderColor lipgloss.Color
+	InputField lipgloss.Style
+}
+func DefaultStyLes() *Styles {
+	s := new(Styles)
+	s.BorderColor = lipgloss.Color("36")
+	s.InputField = lipgloss.NewStyle().Foreground(s.BorderColor).BorderStyle(lipgloss.NormalBorder()).Padding(1).Width(80)
+	return s
+}
 type Model struct {
+	Styles *Styles
+	Height int
+	Width int
 	Spinner spinner.Model
 	TextInput textinput.Model
 	Err error
+	Done bool
+	Definition string
+	Key string
+	Example string
 }
 func (m Model) Init() tea.Cmd {
 	return textinput.Blink
 }
-
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
@@ -26,8 +45,15 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		case tea.KeyEnter:
 			value := m.TextInput.Value()
-			s := urbanapi.Run(value)
-			return m, tea.Println(s)
+			s,e := urbanapi.Run(value)
+			m.Key = value
+			m.Definition = s
+			m.Example = e
+			m.Done = true
+			return m,nil
+		case tea.KeyCtrlN:
+			m.Done = false
+			return m,tea.ClearScreen
 		}
 	case errMsg:
 		m.Err = msg
@@ -37,7 +63,27 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	m.TextInput, cmd = m.TextInput.Update(msg)
 	return m, cmd
 }
+
 func (m Model) View() string {
-	s := fmt.Sprintf("def -> %s",m.TextInput.View())
-	return s
+	if m.Done {
+	return	lipgloss.Place(
+			lipgloss.Width("200"),
+			lipgloss.Height("200"),
+			lipgloss.Left,
+			lipgloss.Center,
+			lipgloss.JoinVertical(
+				lipgloss.Left,
+				fmt.Sprintf("%s -> %s \nexample -> %s", m.Key, m.Definition, m.Example)),
+		)
+	}
+	return lipgloss.Place(
+		m.Width,
+		m.Height,
+		lipgloss.Center,
+		lipgloss.Center,
+		lipgloss.JoinVertical(
+			lipgloss.Left,
+			"Enter the slang you want to know the definition of:",
+			m.Styles.InputField.Render(m.TextInput.View()),),
+		)
 }

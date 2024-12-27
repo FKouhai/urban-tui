@@ -26,12 +26,12 @@ func initialModel() model.Model {
 	return model.Model {
 		TextInput: ti,
 		Spinner: s,
+		Height: 30,
+		Width: 150,
+		Styles: model.DefaultStyLes(),
 		Err: nil,
 	}
 }
 
-//TODO -> need to improve the visuals(lipgloss)
 //TODO -> usage of huh
-//TODO -> if want to make a new search add in the case statement ctrl + n for a new search
 //TODO -> need to use a prompt for the word to search
-//TODO -> create a readme using VHS

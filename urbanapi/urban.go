@@ -2,7 +2,6 @@ package urbanapi
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -14,7 +13,7 @@ type RData struct {
 		Example string `json:"example"`
 	}`json:"data"`
 }
-func Run(message string) string{
+func Run(message string) (string,string){
 	endpoint := "https://unofficialurbandictionaryapi.com/api/search?term="
 	var d RData
 	out, err := connect(endpoint,message); if err != nil {
@@ -23,7 +22,10 @@ func Run(message string) string{
 	d1,err := decode(out,d); if err!= nil {
 		log.Println(err)
 	}
-  return fmt.Sprintf("Meaning %s ",d1.Data[0].Meaning)
+	if len(d1.Data) == 0 {
+		return "No defintion found","no example found"
+	}
+	  return d1.Data[0].Meaning, d1.Data[0].Example
 }
 
 func decode(data []byte, dStruct RData) (*RData,error){
