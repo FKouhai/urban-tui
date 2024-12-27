@@ -50,7 +50,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.Definition = s
 			m.Example = e
 			m.Done = true
-			return m,nil
+			return m,tea.EnterAltScreen
 		case tea.KeyCtrlN:
 			m.Done = false
 			return m,tea.ClearScreen
@@ -67,14 +67,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m Model) View() string {
 	if m.Done {
 	return	lipgloss.Place(
-			lipgloss.Width("200"),
-			lipgloss.Height("200"),
+			m.Width,
+			m.Height,
 			lipgloss.Left,
 			lipgloss.Center,
 			lipgloss.JoinVertical(
 				lipgloss.Left,
-				fmt.Sprintf("%s -> %s \nexample -> %s", m.Key, m.Definition, m.Example)),
-		)
+				fmt.Sprintf("%s -> %s\nexample -> %s", m.Key, m.Definition, m.Example)),
+			)
 	}
 	return lipgloss.Place(
 		m.Width,
