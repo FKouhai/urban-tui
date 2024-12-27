@@ -12,6 +12,6 @@ tar xvf urban-tui_tag_os_arch.tar.gz
 * Ctrl + n -> To search for a new term
 * Ctrl + c/q -> Exit out of the program
 
-[test](./d.emo.gif)
+![demo gif](./demo.gif){ .image25percent }
 
 
