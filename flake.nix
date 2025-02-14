@@ -1,13 +1,20 @@
 {
   description = "urban-cli flake";
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
+    gomod2nix = { 
+      url = "github:nix-community/gomod2nix";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+      };
+    };
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-  inputs.flake-utils.url = "github:numtide/flake-utils";
-  inputs.gomod2nix.url = "github:nix-community/gomod2nix";
-  inputs.gomod2nix.inputs.nixpkgs.follows = "nixpkgs";
-  inputs.gomod2nix.inputs.flake-utils.follows = "flake-utils";
+  };
 
-  outputs = { self, nixpkgs, flake-utils, gomod2nix }:
+
+  outputs = { self, nixpkgs, flake-utils, gomod2nix } @inputs:
     (flake-utils.lib.eachDefaultSystem
       (system:
         let
