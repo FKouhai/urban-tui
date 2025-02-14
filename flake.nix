@@ -1,36 +1,17 @@
 {
-  description = "urban-cli flake";
-  inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
-    gomod2nix = { 
-      url = "github:nix-community/gomod2nix";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-utils.follows = "flake-utils";
+  description = "urban-tui";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+  outputs = { self,nixpkgs }: {
+    packages."x86_64-linux".default = with import nixpkgs { system = "x86_64-linux";};
+      stdenv.mkDerivation {
+        name = "urban-tui";
+        src = self;
+        buildInputs = [
+          pkgs.go
+        ];
+        buildPhase = "go mod tidy && go build -o urban-tui";
+        installPhase = "mkdir -p $out/bin; install -t $out/bin urban-tui";
       };
-    };
-
   };
 
-
-  outputs = { self, nixpkgs, flake-utils, gomod2nix } @inputs:
-    (flake-utils.lib.eachDefaultSystem
-      (system:
-        let
-          pkgs = nixpkgs.legacyPackages.${system};
-
-          # The current default sdk for macOS fails to compile go projects, so we use a newer one for now.
-          # This has no effect on other platforms.
-          callPackage = pkgs.darwin.apple_sdk_11_0.callPackage or pkgs.callPackage;
-        in
-        {
-          packages.default = callPackage ./. {
-            inherit (gomod2nix.legacyPackages.${system}) buildGoApplication;
-          };
-          devShells.default = callPackage ./shell.nix {
-            inherit (gomod2nix.legacyPackages.${system}) mkGoEnv gomod2nix;
-          };
-        })
-    );
 }
