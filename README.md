@@ -12,6 +12,33 @@ tar xvf urban-tui_tag_os_arch.tar.gz
 * Ctrl + n -> To search for a new term
 * Ctrl + c/q -> Exit out of the program
 
+## Install using nix
+To install this package in nix, the provided flake can be used.
+Firstly it is needed to add the input and output in the flake.nix of the destination system
+
+```(nix)
+inputs = {
+  nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+  urban-tui = {
+    url  ="github:FKouhai/urban-tui/main";
+  };
+  --- snip ---
+  outpus = { self,nixpkgs,urban-tui }@ inputs:
+  {
+  --- snip ---
+  }
+};
+```
+Then inside the configuration.nix file add the following
+```(nix)
+{ --- snip ---, inputs, ... }:
+--- snip ---
+environment.systemPackages = [
+    inputs.urban-tui.packages."x86_64-linux".default
+];
+--- snip ---
+```
+
 ![demo gif](./demo.gif)
 
 
